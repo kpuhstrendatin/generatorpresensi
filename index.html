@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Generator Laporan Kinerja Harian - KPU Kabupaten Hulu Sungai Tengah</title>
+<style>
+:root{--red:#7b1020;--navy:#5a0b18;--bg:#f7f3f3;--card:#fff;--tx:#1b2430;--mut:#667085;--bd:#dde2ea}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{background:linear-gradient(120deg,#4a0914,#7b1020 60%,#96182c);color:#fff;border-bottom:4px solid #d9b26f}
+.hd{max-width:1080px;margin:0 auto;padding:18px 16px;display:flex;gap:16px;align-items:center}
+.gear{margin-left:auto;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);color:#fff;font-size:24px;line-height:1;width:44px;height:44px;padding:0;border-radius:50%}.gear:hover{background:rgba(255,255,255,.25)}
+dialog{border:0;border-radius:16px;padding:0;max-width:560px;width:calc(100% - 28px);color:var(--tx)}dialog::backdrop{background:rgba(30,5,10,.55)}
+.dh{background:var(--navy);color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center}.dh b{font-size:16px}.dh button{background:none;border:0;color:#fff;font-size:22px;padding:0 4px}
+.db{padding:18px;max-height:75vh;overflow:auto}.db ol{padding-left:20px;margin:8px 0 14px}.db li{margin-bottom:5px}.db a{color:var(--red);font-weight:600}
+.logo{width:76px;height:76px;flex:none;background:#fff;border-radius:14px;display:flex;align-items:center;justify-content:center;padding:6px}
+.logo img{max-width:100%;max-height:100%}
+.logo b{color:var(--red);font-size:22px}
+h1{margin:0;font-size:22px;line-height:1.25}
+.sub{margin:4px 0 0;font-size:13.5px;opacity:.88}
+main{max-width:1080px;margin:0 auto;padding:18px 16px 40px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(90,11,24,.06)}
+.card h2{margin:0 0 10px;font-size:15px;color:var(--navy)}
+label{display:block;font-size:12.5px;color:var(--mut);margin:0 0 4px}
+input,textarea,select{width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:10px;font:inherit;color:var(--tx);background:#fbfcfe}
+textarea{min-height:96px;resize:vertical}
+input:focus,textarea:focus{outline:2px solid rgba(123,16,32,.35);border-color:var(--red)}
+button{border:1px solid var(--bd);background:#fff;color:var(--navy);border-radius:10px;padding:10px 16px;font:inherit;font-weight:600;cursor:pointer}
+button.p{background:var(--red);border-color:var(--red);color:#fff}
+button.p:hover{filter:brightness(.93)}
+button:disabled{opacity:.6;cursor:wait}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.hint{font-size:12.5px;color:var(--mut);margin-top:6px}
+.err{color:#b42318;font-size:13px;margin-top:8px}
+.chk{display:flex;gap:8px;align-items:center;margin-top:10px;font-size:14px;color:var(--tx)}
+.chk input{width:auto}
+details summary{cursor:pointer;font-weight:600;color:var(--navy)}
+.g2{display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-top:10px}
+.w{overflow-x:auto;border:1px solid var(--bd);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:860px;font-size:13px}
+th{background:var(--navy);color:#fff;text-align:left;padding:9px 10px;font-weight:600}
+td{border-top:1px solid var(--bd);padding:8px 10px;vertical-align:top}
+tr:nth-child(even) td{background:#fbf6f6}
+td[contenteditable]:focus{outline:2px solid var(--red);background:#fff}
+.empty{padding:26px;text-align:center;color:var(--mut)}
+footer{text-align:center;color:var(--mut);font-size:12.5px;padding:0 16px 28px}
+@media (max-width:640px){.hd{flex-wrap:wrap;text-align:left}.gear{margin-left:0}.g2{grid-template-columns:1fr}h1{font-size:19px}}
+</style>
+</head>
+<body>
+<header><div class="hd">
+<div class="logo"><img src="logo-kpu.png" alt="Logo KPU" onerror="this.replaceWith(Object.assign(document.createElement('b'),{textContent:'KPU'}))"></div>
+<div>
+<h1>Generator Laporan Kinerja Harian</h1>
+<p class="sub">Sub Bagian Perencanaan Data dan Informasi<br>Sekretariat KPU Kabupaten Hulu Sungai Tengah</p>
+</div><button class="gear" id="gb" title="Pengaturan API Key" aria-label="Pengaturan">&#9881;</button></div></header>
+
+<main>
+<div class="card">
+<h2>Ketik kegiatan</h2>
+<label for="cat">Boleh beberapa hari sekaligus, kata waktu dibaca otomatis</label>
+<textarea id="cat" placeholder="mis. hari ini apel senin dan notulen rapat mingguan. kemarin bersih-bersih ruangan, masuk 07.15 pulang 16.45"></textarea>
+<div class="chk"><input type="checkbox" id="kr" checked><label for="kr" style="margin:0;font-size:14px;color:var(--tx)">Izinkan AI mengembangkan kalimat agar lebih lengkap</label></div>
+<div class="hint">Jam masuk dan pulang diacak (masuk sebelum 07.30, pulang setelah 16.30) bila tidak disebut. Angka yang tidak disebut tidak ditambahkan.</div>
+<div class="err" id="err"></div>
+<div class="row"><button class="p" id="gen">Susun laporan</button></div>
+</div>
+
+<div class="card">
+<h2>Tabel laporan</h2>
+<div class="w"><table id="tb"><thead><tr><th>No</th><th>Tanggal</th><th>Jam Masuk</th><th>Jam Pulang</th><th>Uraian Kegiatan</th><th>Output/Hasil</th><th>Keterangan</th><th></th></tr></thead><tbody></tbody></table>
+<div class="empty" id="em">Belum ada data. Ketik kegiatan di atas lalu tekan Susun laporan.</div></div>
+<div class="hint">Sel dapat diedit langsung. Hasil sebaiknya diperiksa sebelum dilaporkan.</div>
+<div class="row"><button class="p" id="dl">Unduh .xlsx</button><button id="cp">Salin untuk Excel</button><button id="cl">Kosongkan</button><span class="hint" id="msg"></span></div>
+</div>
+</main>
+<footer>Generator Laporan Kinerja Harian &middot; KPU Kabupaten Hulu Sungai Tengah</footer>
+
+<dialog id="dlg"><div class="dh"><b>&#9881; Pengaturan Gemini API Key</b><button id="dx" aria-label="Tutup">&times;</button></div>
+<div class="db">
+<label>API Key Gemini (disimpan hanya di browser ini)</label><input type="password" id="key" placeholder="AIza..." autocomplete="off">
+<div style="margin-top:10px"><label>Pilih model cepat</label>
+<select id="msel"><option value="">-- pilih dari daftar --</option>
+<optgroup label="Gemini 3.x"><option value="gemini-3.8-flash">Gemini 3.8 Flash (terbaru)</option><option value="gemini-3.7-flash">Gemini 3.7 Flash</option><option value="gemini-3.6-flash">Gemini 3.6 Flash</option><option value="gemini-3.5-flash">Gemini 3.5 Flash</option><option value="gemini-3.5-flash-lite">Gemini 3.5 Flash-Lite (cepat &amp; hemat)</option><option value="gemini-3.1-flash-lite">Gemini 3.1 Flash-Lite</option><option value="gemini-3.1-pro-preview">Gemini 3.1 Pro (preview)</option><option value="gemini-3-flash-preview">Gemini 3 Flash (preview)</option></optgroup>
+<optgroup label="Gemini 2.5"><option value="gemini-2.5-pro">Gemini 2.5 Pro</option><option value="gemini-2.5-flash">Gemini 2.5 Flash</option><option value="gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite</option></optgroup></select></div>
+<div style="margin-top:10px"><label>Nama model (bisa diketik manual)</label><input id="model" placeholder="gemini-3.5-flash-lite"></div>
+<div class="row"><button class="p" id="sv">Simpan</button><button id="ts">Tes koneksi AI</button><button id="rk">Hapus key</button></div>
+<div id="smsg" class="hint" style="margin-top:8px"></div>
+<hr style="border:0;border-top:1px solid var(--bd);margin:16px 0">
+<b style="color:var(--navy)">Panduan mendapatkan API Key</b>
+<ol>
+<li>Buka <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> dan masuk dengan akun Google.</li>
+<li>Setujui syarat layanan jika diminta.</li>
+<li>Klik <b>Create API key</b>, lalu pilih project atau buat project baru.</li>
+<li>Salin key yang muncul (biasanya diawali <code>AIza</code>).</li>
+<li>Kembali ke sini, tempel di kolom di atas, lalu klik <b>Simpan</b>.</li>
+</ol>
+<div class="hint">Tersedia paket gratis dengan batas pemakaian. Jangan membagikan key ke orang lain dan jangan menaruhnya di file kode. Nama model bisa berubah dari waktu ke waktu; jika muncul galat model tidak ditemukan, cek daftar terbaru di ai.google.dev/gemini-api/docs/models lalu ketik manual di kolom nama model. Model Flash-Lite paling cepat dan hemat, cocok untuk tugas ini.</div>
+</div></dialog>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+var HARI=["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"],rows=[];
+function $(i){return document.getElementById(i)}
+function pad(n){return (n<10?"0":"")+n}
+function rnd(a,b){return a+Math.floor(Math.random()*(b-a+1))}
+function iso(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+function dateStr(v){var p=v.split("-"),d=new Date(+p[0],+p[1]-1,+p[2]);return HARI[d.getDay()]+", "+pad(d.getDate())+"/"+pad(d.getMonth()+1)+"/"+d.getFullYear()}
+function tm(v,f){return /^\d{1,2}:\d{2}$/.test(v||"")?(v.length==4?"0"+v:v):f()}
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){}return null}
+function save(){ls("kinerja_rows",JSON.stringify(rows))}
+function render(){
+  var tb=document.querySelector("#tb tbody");tb.innerHTML="";$("em").style.display=rows.length?"none":"block";
+  rows.forEach(function(r,i){
+    var tr=document.createElement("tr");tb.appendChild(tr);
+    [i+1,r.t,r.m,r.p,r.u,r.o,r.k].forEach(function(x,j){var td=document.createElement("td");td.textContent=x;tr.appendChild(td);
+      if(j>0){td.contentEditable="true";td.oninput=function(){r[["","t","m","p","u","o","k"][j]]=td.textContent;save()}}});
+    var td=document.createElement("td"),b=document.createElement("button");b.textContent="\u00d7";b.style.padding="2px 9px";b.onclick=function(){rows.splice(i,1);save();render()};td.appendChild(b);tr.appendChild(td);
+  });
+}
+function openSet(){$("dlg").showModal()}
+$("gb").onclick=openSet;$("msel").onchange=function(){if(this.value)$("model").value=this.value};$("dx").onclick=function(){$("dlg").close()};
+$("sv").onclick=function(){ls("gem_key",$("key").value.trim());ls("gem_model",$("model").value.trim()||"gemini-3.5-flash-lite");$("smsg").textContent="Tersimpan.";setTimeout(function(){$("dlg").close();$("smsg").textContent=""},700)};
+$("ts").onclick=async function(){
+  var m=$("smsg"),key=$("key").value.trim(),model=($("model").value||"gemini-3.5-flash-lite").trim();
+  m.style.color="";if(!key){m.textContent="Isi API key dulu.";m.style.color="#b42318";return}
+  var b=$("ts");b.disabled=true;b.textContent="Menguji...";m.textContent="";var t0=Date.now();
+  try{
+    var res=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(model)+":generateContent?key="+encodeURIComponent(key),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({contents:[{parts:[{text:"Balas satu kata saja: OK"}]}]})});
+    var j=await res.json();
+    if(!res.ok)throw new Error((j.error&&j.error.message)||("HTTP "+res.status));
+    m.textContent="\u2705 Terhubung. Model "+model+" merespons dalam "+((Date.now()-t0)/1000).toFixed(1)+" detik.";m.style.color="#067647";
+  }catch(err){
+    var msg=String(err.message||err);
+    if(/API key not valid|API_KEY_INVALID/i.test(msg))msg="API key tidak valid. Periksa kembali key-nya.";
+    else if(/not found|not supported/i.test(msg))msg="Model tidak ditemukan. Pilih model lain dari daftar.";
+    else if(/quota|exhausted|429/i.test(msg))msg="Kuota habis atau terlalu sering. Coba lagi nanti.";
+    else if(/Failed to fetch|NetworkError/i.test(msg))msg="Gagal terhubung ke internet atau diblokir jaringan.";
+    m.textContent="\u274C "+msg;m.style.color="#b42318";
+  }
+  b.disabled=false;b.textContent="Tes koneksi AI";
+};
+$("rk").onclick=function(){$("key").value="";ls("gem_key","");$("smsg").textContent="Key dihapus."};
+$("gen").onclick=async function(){
+  var e=$("err");e.textContent="";
+  var cat=$("cat").value.trim();if(!cat){e.textContent="Ketik kegiatan dulu.";return}
+  var key=($("key").value||ls("gem_key")||"").trim();
+  if(!key){e.textContent="Isi dulu Gemini API Key lewat ikon gir di kanan atas.";openSet();return}
+  var model=($("model").value||"gemini-3.5-flash-lite").trim(),kr=$("kr").checked;
+  var btn=$("gen");btn.disabled=true;btn.textContent="AI sedang menyusun...";
+  var now=new Date(),cal=[];
+  for(var k=0;k<21;k++){var d=new Date(now.getFullYear(),now.getMonth(),now.getDate()-k);cal.push(HARI[d.getDay()]+" "+iso(d)+(k==0?" (hari ini)":k==1?" (kemarin)":""))}
+  var prompt="Kamu asisten penyusun laporan capaian kinerja harian ASN. Jabatan: Penata Kelola Sistem dan Teknologi Informasi, Sekretariat KPU Kabupaten Hulu Sungai Tengah (Sub Bagian Perencanaan, Data dan Informasi).\n"+
+  "Kalender (terbaru ke lama):\n"+cal.join("\n")+"\n\nPrompt pengguna: "+cat+"\n\n"+
+  "Tugas: pecah prompt menjadi satu entri per tanggal. Tentukan tanggal dari kata waktu (hari ini, kemarin, lusa, Senin lalu, dst.) memakai kalender di atas; jika tidak ada kata waktu, pakai hari ini. Satu tanggal = satu entri, semua kegiatan tanggal itu digabung.\n"+
+  "Aturan tiap entri:\n- uraian: bahasa Indonesia formal, diawali kata kerja aktif formal (menyusun, merevisi, membuat, mengoordinasikan, membalas, dst.), kegiatan digabung nyambung (dilanjutkan, kemudian, serta).\n"+
+  "- output: hasil nyata dan terukur, mis. \"1 dokumen notula\"; pakai angka yang disebut pengguna; jangan menambah angka yang tidak disebut.\n"+
+  "- jam_masuk/jam_pulang: format HH:MM hanya jika pengguna menyebut, jika tidak null.\n- keterangan: isi hanya jika perlu (belum selesai, lanjut besok, lembur), jika tidak \"-\".\n"+
+  (kr?"- Kamu BOLEH mengembangkan dan mengarang kalimat agar uraian dan output lebih lengkap dan formal sesuai konteks tugas kesekretariatan KPU, tanpa menambah kegiatan baru yang jauh dari prompt.\n":"- Setia pada prompt: jangan menambah kegiatan atau detail baru, hanya rapikan bahasa.\n")+
+  "Balas HANYA JSON array: [{\"tanggal\":\"YYYY-MM-DD\",\"jam_masuk\":null,\"jam_pulang\":null,\"uraian\":\"...\",\"output\":\"...\",\"keterangan\":\"-\"}]";
+  try{
+    var res=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(model)+":generateContent?key="+encodeURIComponent(key),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{responseMimeType:"application/json"}})});
+    var j=await res.json();
+    if(!res.ok)throw new Error((j.error&&j.error.message)||"Permintaan gagal");
+    var txt=j.candidates[0].content.parts.map(function(p){return p.text||""}).join("").replace(/```json|```/g,"").trim();
+    var r=JSON.parse(txt);if(!Array.isArray(r))r=[r];
+    r.forEach(function(x){
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(x.tanggal||""))x.tanggal=iso(now);
+      var t=dateStr(x.tanggal),dup=rows.some(function(y){return y.t==t});
+      var m=dup?"":tm(x.jam_masuk,function(){return "07:"+pad(rnd(0,29))});
+      var p=dup?"":tm(x.jam_pulang,function(){return Math.random()<.25?"17:"+pad(rnd(0,15)):"16:"+pad(rnd(31,59))});
+      rows.push({d:x.tanggal,t:t,m:m,p:p,u:String(x.uraian||""),o:String(x.output||""),k:String(x.keterangan||"-")});
+    });
+    rows.sort(function(a,b){return (a.d||"")<(b.d||"")?-1:(a.d||"")>(b.d||"")?1:0});
+    save();render();$("cat").value="";
+  }catch(err){e.textContent="Gagal menyusun: "+err.message}
+  btn.disabled=false;btn.textContent="Susun laporan";
+};
+function data(){return [["No","Tanggal","Jam Masuk","Jam Pulang","Uraian Kegiatan","Output/Hasil","Keterangan"]].concat(rows.map(function(r,i){return [i+1,r.t,r.m,r.p,r.u,r.o,r.k]}))}
+$("dl").onclick=function(){
+  if(!rows.length)return;
+  var ws=XLSX.utils.aoa_to_sheet(data());ws["!cols"]=[{wch:5},{wch:20},{wch:11},{wch:11},{wch:70},{wch:45},{wch:20}];
+  var wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Kinerja");XLSX.writeFile(wb,"laporan-kinerja.xlsx");
+};
+$("cp").onclick=function(){
+  var txt=data().map(function(r){return r.map(function(x){return String(x).replace(/[\t\n\r]+/g," ")}).join("\t")}).join("\n");
+  navigator.clipboard.writeText(txt).then(function(){$("msg").textContent="Tersalin. Tempel di Excel/Sheets."},function(){$("msg").textContent="Gagal menyalin."});
+};
+$("cl").onclick=function(){if(rows.length&&confirm("Hapus semua baris?")){rows=[];save();render()}};
+try{rows=JSON.parse(ls("kinerja_rows")||"[]")||[]}catch(e){rows=[]}
+$("key").value=ls("gem_key")||"";$("model").value=ls("gem_model")||"gemini-3.5-flash-lite";
+render();
+</script>
+</body>
+</html>
