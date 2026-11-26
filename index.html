@@ -61,7 +61,7 @@ footer{text-align:center;color:var(--mut);font-size:12.5px;padding:0 16px 28px}
 <h2>Ketik kegiatan</h2>
 <label for="cat">Boleh beberapa hari sekaligus, kata waktu dibaca otomatis</label>
 <textarea id="cat" placeholder="mis. hari ini apel senin dan notulen rapat mingguan. kemarin bersih-bersih ruangan, masuk 07.15 pulang 16.45"></textarea>
-<div class="chk"><input type="checkbox" id="kr" checked><label for="kr" style="margin:0;font-size:14px;color:var(--tx)">Izinkan AI mengembangkan kalimat agar lebih lengkap</label></div>
+<div class="chk"><input type="checkbox" id="kr" checked><label for="kr" style="margin:0;font-size:14px;color:var(--tx)">Izinkan AI menyempurnakan redaksi (tetap singkat)</label></div>
 <div class="hint">Jam masuk dan pulang diacak (masuk sebelum 07.30, pulang setelah 16.30) bila tidak disebut. Angka yang tidak disebut tidak ditambahkan.</div>
 <div class="err" id="err"></div>
 <div class="row"><button class="p" id="gen">Susun laporan</button></div>
@@ -154,10 +154,17 @@ $("gen").onclick=async function(){
   var prompt="Kamu asisten penyusun laporan capaian kinerja harian ASN. Jabatan: Penata Kelola Sistem dan Teknologi Informasi, Sekretariat KPU Kabupaten Hulu Sungai Tengah (Sub Bagian Perencanaan, Data dan Informasi).\n"+
   "Kalender (terbaru ke lama):\n"+cal.join("\n")+"\n\nPrompt pengguna: "+cat+"\n\n"+
   "Tugas: pecah prompt menjadi satu entri per tanggal. Tentukan tanggal dari kata waktu (hari ini, kemarin, lusa, Senin lalu, dst.) memakai kalender di atas; jika tidak ada kata waktu, pakai hari ini. Satu tanggal = satu entri, semua kegiatan tanggal itu digabung.\n"+
-  "Aturan tiap entri:\n- uraian: bahasa Indonesia formal, diawali kata kerja aktif formal (menyusun, merevisi, membuat, mengoordinasikan, membalas, dst.), kegiatan digabung nyambung (dilanjutkan, kemudian, serta).\n"+
-  "- output: hasil nyata dan terukur, mis. \"1 dokumen notula\"; pakai angka yang disebut pengguna; jangan menambah angka yang tidak disebut.\n"+
+  "Aturan tiap entri:\n- uraian: SINGKAT dan padat, maksimal 1-2 klausa (sekitar 8-20 kata), diawali kata kerja aktif formal (mengikuti, menyusun, membuat, melaksanakan, mengoordinasikan, merevisi, dst.). Hindari kata pembuka/penutup bertele-tele seperti \"dalam rangka\", \"guna\", \"sebagai bentuk\", \"yang bertujuan\". Jika ada beberapa kegiatan, gabung dengan \"dan\" atau \"dilanjutkan\".\n"+
+  "- output: frasa benda singkat (3-8 kata) berupa hasil nyata, tanpa kalimat panjang. Pakai angka hanya jika disebut pengguna.\n"+
+  "Contoh gaya yang diinginkan (dari laporan sebelumnya):\n"+
+  "uraian: \"Mengikuti apel pagi dan rapat internal mingguan\" | output: \"Notulen hasil rapat\"\n"+
+  "uraian: \"Menyusun draft laporan SKM TW III\" | output: \"Draft laporan SKM TW III\"\n"+
+  "uraian: \"Membuat tautan kuesioner SKM Semester 1\" | output: \"Tautan kuesioner SKM aktif\"\n"+
+  "uraian: \"Melaksanakan koordinasi PDPB ke Rutan Kelas IIb Barabai\" | output: \"Data awal potensi pemilih\"\n"+
+  "uraian: \"Mendesain dan mempublikasikan infografis hasil SKM TW II\" | output: \"Infografis hasil SKM terpublikasi\"\n"+
+  "uraian: \"Melakukan pengecekan rutin ATK dan perangkat kerja\" | output: \"Inventaris ATK terpantau\"\n"+
   "- jam_masuk/jam_pulang: format HH:MM hanya jika pengguna menyebut, jika tidak null.\n- keterangan: isi hanya jika perlu (belum selesai, lanjut besok, lembur), jika tidak \"-\".\n"+
-  (kr?"- Kamu BOLEH mengembangkan dan mengarang kalimat agar uraian dan output lebih lengkap dan formal sesuai konteks tugas kesekretariatan KPU, tanpa menambah kegiatan baru yang jauh dari prompt.\n":"- Setia pada prompt: jangan menambah kegiatan atau detail baru, hanya rapikan bahasa.\n")+
+  (kr?"- Kamu boleh merapikan dan menyempurnakan redaksi, tetapi tetap singkat seperti contoh; jangan menambah kegiatan baru atau angka yang tidak disebut.\n":"- Setia pada prompt: jangan menambah kegiatan atau detail baru, hanya rapikan bahasa dan tetap singkat seperti contoh.\n")+
   "Balas HANYA JSON array: [{\"tanggal\":\"YYYY-MM-DD\",\"jam_masuk\":null,\"jam_pulang\":null,\"uraian\":\"...\",\"output\":\"...\",\"keterangan\":\"-\"}]";
   try{
     var res=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(model)+":generateContent?key="+encodeURIComponent(key),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{responseMimeType:"application/json"}})});
